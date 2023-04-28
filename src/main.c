@@ -64,8 +64,13 @@ int main(void)
 {
   /* Chip errata */
   CHIP_Init();
+
   /* If first word of user data page is non-zero, enable Energy Profiler trace */
   BSP_TraceProfilerSetup();
+  bool hola;
+
+  BSP_I2C_Init(0x81);
+  hola=I2C_Test();
 
   /* Initialize LED driver */
   BSP_LedsInit();
@@ -79,7 +84,6 @@ int main(void)
   /* do not let to sleep deeper than define */
   SLEEP_SleepBlockBegin((SLEEP_EnergyMode_t)(configSLEEP_MODE + 1));
 #endif
-
   /* Parameters value for taks*/
   static TaskParams_t parametersToTask1 = { pdMS_TO_TICKS(1000), 0 };
   static TaskParams_t parametersToTask2 = { pdMS_TO_TICKS(500), 1 };
@@ -92,4 +96,12 @@ int main(void)
   vTaskStartScheduler();
 
   return 0;
+}
+
+int _write(int file, const char *ptr, int len) {
+    int x;
+    for (x = 0; x < len; x++) {
+       ITM_SendChar (*ptr++);
+    }
+    return (len);
 }
